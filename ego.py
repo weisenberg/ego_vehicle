@@ -73,6 +73,8 @@ try:
     # place spectator on ego spawning
     # --------------
     while True:
+        channels = lidar_sensor.attributes.get('channels')
+        print(channels)
         spectator = world.get_spectator()
         
         # ---------------

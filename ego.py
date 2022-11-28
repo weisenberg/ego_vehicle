@@ -36,7 +36,7 @@ try:
     bp = blueprint_library.filter('model3')[0]
     spawn_point = random.choice(world.get_map().get_spawn_points())
     ego_vehicle = world.spawn_actor(bp, spawn_point)
-    ego_vehicle.set_autopilot(True)
+    ego_vehicle.set_autopilot(False)
     
     actor_list.append(ego_vehicle)
     

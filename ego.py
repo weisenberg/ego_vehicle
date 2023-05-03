@@ -20,10 +20,12 @@ import cv2
 # lidar attribute values
 lidar_upper_fov = 15.0
 lidar_lower_fov = -15.0
-lidar_range = 30
-lidar_rotation_frequency = 40
-lidar_channels = 32
-lidar_pointsPerSecond = 10000
+lidar_range = 100
+lidar_rotation_frequency = 10
+lidar_channels = 64
+lidar_pointsPerSecond = 512000
+lidar_dropoff_general_rate = 0
+lidar_dropoff_intensity_limit = 0
     
 actor_list = []
 try:
@@ -51,8 +53,12 @@ try:
     lidar_bp.set_attribute('range', f'{lidar_range}')
     lidar_bp.set_attribute('points_per_second', f'{lidar_pointsPerSecond}')
     lidar_bp.set_attribute('rotation_frequency', f'{lidar_rotation_frequency}')
-    
-    lidar_spawn_point = carla.Transform(carla.Location(z=2.4))
+    lidar_bp.set_attribute('dropoff_general_rate', f'{lidar_dropoff_general_rate}')
+    lidar_bp.set_attribute('dropoff_intensity_limit', f'{lidar_dropoff_intensity_limit}')
+
+    lidar_location = carla.Location(x=0.0, y=0.0, z=2.4)
+    lidar_rotation = carla.Rotation(pitch=0.0, yaw=0.0, roll=0.0)
+    lidar_spawn_point = carla.Transform(lidar_location, lidar_rotation)
 
     lidar_sensor = world.spawn_actor(lidar_bp, lidar_spawn_point, attach_to=ego_vehicle, attachment_type=carla.AttachmentType.Rigid)
     actor_list.append(lidar_sensor)
@@ -64,7 +70,16 @@ try:
     # --------------
 
     imu_bp = world.get_blueprint_library().find('sensor.other.imu')
-    imu_spawn_point = carla.Transform(carla.Location(z=0.7))
+
+    imu_bp.set_attribute('sensor_tick', '0.02') #50Hz update rate
+    imu_bp.set_attribute('noise_accel_stddev_x', '0.0') #noise-free IMU sensor
+    imu_bp.set_attribute('noise_accel_stddev_y', '0.0')
+    imu_bp.set_attribute('noise_accel_stddev_z', '0.0')
+    imu_bp.set_attribute('noise_gyro_stddev_x', '0.0')
+    imu_bp.set_attribute('noise_gyro_stddev_y', '0.0')
+    imu_bp.set_attribute('noise_gyro_stddev_z', '0.0')
+
+    imu_spawn_point = carla.Transform(carla.Location(x=0.0, y=0.0, z=0.7))
     ego_imu = world.spawn_actor(imu_bp, imu_spawn_point, attach_to=ego_vehicle, attachment_type=carla.AttachmentType.Rigid)
     actor_list.append(ego_imu)
     
